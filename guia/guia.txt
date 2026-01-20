@@ -1,0 +1,194 @@
+✅ Guía Actualizada: Backend PHP para Helpdesk (para alumnos)
+Objetivo: Probar paso a paso el backend en PHP conectado a MySQL, listo para integrar con React.
+
+🚀 Iniciar el servidor
+
+    php -S localhost:8000
+
+    Ahora todos los endpoints estarán disponibles en http://localhost:8000/api/...
+
+
+
+✅ 1. Probar la conexión a la base de datos
+        Archivo: api/test.php
+        Método: GET
+        Propósito: Verificar que PHP puede conectarse a MySQL.
+
+        Abre en el navegador o usa curl:
+        http://localhost:8000/api/test.php
+
+        ✅ Resultado esperado:
+
+           {
+                "status": "Conexión exitosa",
+                "time": "2026-01-20 16:41:02"
+            }
+
+        Consejo para alumnos: Si ves un error, revisa que:
+
+        La carpeta config/ esté dentro de backend/.
+        El archivo se llame exactamente conexion.php.
+        La base de datos se llame helpdesk.
+
+
+✅ 2. Probar la autenticación de usuarios
+    Archivo: api/auth.php
+    Método: POST
+    Propósito: Validar email y contraseña, y devolver los datos del usuario.
+
+    Datos de prueba (ya están en la base de datos):
+
+    Email: admin@helpdesk.com
+    Contraseña: password ← ¡sí, es literalmente "password"!
+
+    Cómo probarlo con curl:
+
+        http://localhost:8000/api/auth.php
+        {
+            "email": "admin@helpdesk.com",
+            "password": "password"
+        }
+
+        ✅ Resultado esperado:
+
+        {
+            "message": "Login exitoso",
+            "user": {
+                "id": "user-001",
+                "email": "admin@helpdesk.com",
+                "full_name": "Administrador",
+                "role": "admin"
+            }
+        }
+
+✅ 3. Listar los tickets de un usuario
+    Archivo: api/tickets.php
+    Método: GET
+    Propósito: Mostrar los tickets asociados a un usuario.
+
+    Parámetro requerido: user_id (viene por URL)
+
+    Cómo probarlo:
+        # Ver todos los tickets (usuario admin)
+        http://localhost:8000/api/tickets.php?user_id=user-001
+    
+        # Ver solo tus tickets (usuario común)
+        curl "http://localhost:8000/api/tickets.php?user_id=user-003"
+
+
+✅ 4. Crear un nuevo ticket
+    Archivo: api/tickets.php
+    Método: POST
+    Propósito: Enviar una nueva solicitud de soporte al sistema.
+
+    Campos obligatorios:
+
+    title
+    description
+    created_by (ID de un usuario existente)
+    category_id (ID de una categoría existente)
+    Ejemplo de prueba con curl:
+
+        http://localhost:8000/api/tickets.php
+
+        {
+            "title": "Problema con impresora",
+            "description": "La impresora del piso 2 no responde",
+            "created_by": "user-003",
+            "category_id": "cat-003",
+            "priority": "high"
+        }
+
+        ✅ Resultado esperado:
+
+            {
+                "message": "Ticket creado exitosamente",
+                "ticket_id": "ticket-a1b2c3d4e5f6..."
+            }
+
+✅ 5. Obtener un ticket por ID
+    Archivo: api/tickets.php
+    Método: GET
+    Propósito: Ver el detalle completo de un ticket.
+
+    Parámetro: id (por URL)
+
+    Ejemplo de prueba:
+
+    curl "http://localhost:8000/api/tickets.php?id=ticket-001"
+
+    ✅ Resultado: Un objeto con todos los datos del ticket, incluyendo nombre de categoría, creador y asignado.
+
+    🔍 Útil para: mostrar el detalle en React, cargar formulario de edición, etc.
+
+
+✅ 6. Actualizar un ticket
+    Archivo: api/tickets.php
+    Método: PUT
+    Propósito: Modificar estado, asignación, prioridad, etc.
+
+    Parámetro en URL: ?id=ticket-001
+    Cuerpo: JSON con los campos a cambiar
+
+    Ejemplo:
+
+        http://localhost:8000/api/tickets.php?id=ticket-001
+        
+        {
+            "status": "in_progress",
+            "assigned_to": "user-002",
+            "priority": "urgent"
+        }
+
+
+🎯 Objetivos del Paso 7
+    Crear un comentario en un ticket (POST /api/comments.php)
+    Listar todos los comentarios de un ticket (GET /api/comments.php?ticket_id=...)
+
+✅ 7. Comentarios en un ticket
+    Archivo: api/comments.php
+
+    7.1. Crear un comentario
+        Método: POST
+        Campos: ticket_id, user_id, content
+        Ejemplo:
+
+        http://localhost:8000/api/comments.php
+
+        {
+            "ticket_id": "ticket-001",
+            "user_id": "user-003",
+            "content": "Adjunto captura de pantalla del error.",
+            "is_internal": false
+        }
+
+    7.2. Listar comentarios
+        Método: GET
+        Parámetro: ticket_id
+        Ejemplo:
+
+        http://localhost:8000/api/comments.php?ticket_id=ticket-001
+
+        Devuelve una lista de mensajes con nombre del autor, rol y fecha.
+
+
+✅ 8. Historial de cambios (auditoría automática)
+    Propósito: Cada vez que se modifique un ticket (estado, asignación, prioridad, etc.), 
+    el sistema registra automáticamente quién hizo el cambio, qué campo cambió y los valores anterior y nuevo.
+
+    🔁 No hay un endpoint nuevo. El historial se guarda automáticamente cuando usas PUT /api/tickets.php?id=....
+
+    📌 Requisito en la solicitud PUT
+        Además de los campos a actualizar, debes incluir:
+
+    🧪 Ejemplo de uso
+
+        http://localhost:8000/api/tickets.php?id=ticket-001
+
+        {
+            "status": "in_progress",
+            "assigned_to": "user-002",
+            "changed_by": "user-001"
+        }
+
+        ✅ Respuesta:

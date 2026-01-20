@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>API Helpdesk - Documentación</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f9fafb; }
+    h1 { color: #1e40af; }
+    h2 { color: #1e3a8a; margin-top: 30px; }
+    pre { background: #f1f5f9; padding: 12px; border-radius: 6px; overflow-x: auto; }
+    code { color: #c2410c; }
+    .endpoint { background: white; padding: 16px; margin: 16px 0; border-left: 4px solid #3b82f6; border-radius: 4px; }
+    .method-post { border-left-color: #ef4444; }
+    .method-put { border-left-color: #eab308; }
+    .note { background: #fffbeb; padding: 12px; border-radius: 6px; margin: 16px 0; }
+  </style>
+</head>
+<body>
+  <h1>🛠️ API Helpdesk - Documentación para Alumnos</h1>
+  
+  <p>Backend en PHP puro + MySQL. Inicia el servidor con:</p>
+  <pre>php -S localhost:8000</pre>
+
+  <h2>🔐 Autenticación</h2>
+  <div class="endpoint">
+    <strong>POST</strong> <code>/api/auth.php</code><br>
+    Iniciar sesión.
+    <pre>{
+  "email": "admin@helpdesk.com",
+  "password": "password"
+}</pre>
+  </div>
+
+  <h2>🎫 Tickets</h2>
+  
+  <div class="endpoint">
+    <strong>GET</strong> <code>/api/tickets.php?user_id=user-001</code><br>
+    Listar tickets del usuario (admin ve todos).
+  </div>
+
+  <div class="endpoint method-post">
+    <strong>POST</strong> <code>/api/tickets.php</code><br>
+    Crear un nuevo ticket.
+    <pre>{
+  "title": "Error al imprimir",
+  "description": "La impresora no responde",
+  "created_by": "user-003",
+  "category_id": "cat-003",
+  "priority": "high"
+}</pre>
+  </div>
+
+  <div class="endpoint">
+    <strong>GET</strong> <code>/api/tickets.php?id=ticket-001</code><br>
+    Obtener detalle de un ticket.
+  </div>
+
+  <div class="endpoint method-put">
+    <strong>PUT</strong> <code>/api/tickets.php?id=ticket-001</code><br>
+    Actualizar un ticket.
+    <pre>{
+  "status": "in_progress",
+  "assigned_to": "user-002"
+}</pre>
+  </div>
+
+  <h2>💬 Comentarios</h2>
+  
+  <div class="endpoint method-post">
+    <strong>POST</strong> <code>/api/comments.php</code><br>
+    Agregar comentario a un ticket.
+    <pre>{
+  "ticket_id": "ticket-001",
+  "user_id": "user-002",
+  "content": "Revisando el problema...",
+  "is_internal": true
+}</pre>
+  </div>
+
+  <div class="endpoint">
+    <strong>GET</strong> <code>/api/comments.php?ticket_id=ticket-001</code><br>
+    Listar comentarios de un ticket.
+  </div>
+
+  <h2>🧪 Datos de prueba</h2>
+  <div class="note">
+    <strong>Usuarios:</strong><br>
+    • Admin: <code>user-001</code> | email: <code>admin@helpdesk.com</code><br>
+    • Agente: <code>user-002</code> | email: <code>agente@helpdesk.com</code><br>
+    • Usuario: <code>user-003</code> | email: <code>usuario@helpdesk.com</code><br>
+    <strong>Contraseña para todos:</strong> <code>password</code>
+  </div>
+
+  <div class="note">
+    <strong>Categorías:</strong><br>
+    <code>cat-001</code>: Error de Sistema<br>
+    <code>cat-002</code>: Solicitud de Compra<br>
+    <code>cat-003</code>: Soporte Técnico<br>
+    <code>cat-004</code>: Desarrollo<br>
+    <code>cat-005</code>: General
+  </div>
+
+  <h2>🚀 Próximamente</h2>
+  <p>• Historial de cambios (<code>ticket_history</code>)<br>
+     • Validación de roles en endpoints<br>
+     • Integración con frontend React</p>
+
+</body>
+</html>
